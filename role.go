@@ -4,25 +4,30 @@ import "sync"
 
 type (
 	// Roles is a map[id]role
-	Roles[T comparable] IRole[T]
+	Roles[T comparable] map[T]IRole[T]
 
 	IRole[T comparable] interface {
-		Assgin(p IPermission[T]) bool  // assign permission to role
+		ID() T
+		Assign(p IPermission[T]) error // assign permission to role
 		Revoke(p IPermission[T]) error // remove permission to role
+		Permit(p IPermission[T]) bool
 		Permissions() []IPermission[T] // get the permissions of the role
 	}
 
 	SRole[T comparable] struct {
 		*sync.RWMutex
-		ID          T // role 唯一标识
+		id          T // role 唯一标识
 		permissions Permissions[T]
 	}
 )
 
+func (role *SRole[T]) ID() T {
+	return role.id
+}
 func NewRole[T comparable](id T) *SRole[T] {
 	return &SRole[T]{
 		RWMutex:     &sync.RWMutex{},
-		ID:          id,
+		id:          id,
 		permissions: map[T]IPermission[T]{},
 	}
 }
