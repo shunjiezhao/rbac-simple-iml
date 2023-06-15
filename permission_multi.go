@@ -2,25 +2,25 @@ package rbac
 
 import "strings"
 
-type SPermssionLayer struct {
-	SPermission[string]        // id is perrmisson
-	Sep                 string // split string like /a/b/c -> a, b, c
+type SPermissionLayer struct {
+	IPermission[string] `json:"Ipermission"` // id is perrmisson
+	Sep                 string               `json:"sep"       ` // split string like /a/b/c -> a, b, c
 }
 
-func NewLayerPermission(id, sep string) SPermssionLayer {
-	return SPermssionLayer{
-		SPermission: NewPermission[string](id),
+func NewLayerPermission(id, sep string) SPermissionLayer {
+	return SPermissionLayer{
+		IPermission: NewPermission[string](id),
 		Sep:         sep,
 	}
 }
 
-//Match return true when we a parent perrmison or equal other
-func (s SPermssionLayer) Match(other IPermission[string]) bool {
+// Match return true when we a parent perrmison or equal other
+func (s SPermissionLayer) Match(other IPermission[string]) bool {
 	if s.ID() == other.ID() {
 		return true
 	}
 
-	q, ok := other.(SPermssionLayer)
+	q, ok := other.(SPermissionLayer)
 	if !ok {
 		return false // type not equal
 	}

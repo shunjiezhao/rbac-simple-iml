@@ -10,14 +10,14 @@ type (
 	Permissions[T comparable] map[T]IPermission[T]
 )
 
-func NewPermission[T comparable](id T) SPermission[T] {
+func NewPermission[T comparable](id T) IPermission[T] {
 	return SPermission[T]{
 		id: id,
 	}
 }
 
 type SPermission[T comparable] struct {
-	id T
+	id T `json:"id"`
 }
 
 func (p SPermission[T]) ID() T {

@@ -15,9 +15,9 @@ type (
 	}
 
 	SRole[T comparable] struct {
-		*sync.RWMutex
-		id          T // role 唯一标识
-		permissions Permissions[T]
+		*sync.RWMutex `json:"-"`
+		id            T              `json:"id"` // role 唯一标识
+		permissions   Permissions[T] `json:"permissions"`
 	}
 )
 

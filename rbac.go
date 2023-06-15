@@ -19,8 +19,8 @@ var (
 type (
 	Rbac[T comparable] struct {
 		mu      sync.RWMutex
-		roles   Roles[T]
-		parents map[T]map[T]struct{} // map[RoleId] ParentRole
+		roles   Roles[T]             `json:"roles"`
+		parents map[T]map[T]struct{} `json:"parents"` // map[RoleId] ParentRole
 	}
 	// AssertionFunc supplies more fine-grained permission controls.
 	AssertionFunc[T comparable] func(*Rbac[T], T, IPermission[T]) bool
@@ -36,25 +36,27 @@ func New[T comparable]() *Rbac[T] {
 }
 
 // SetParents bind `parents` to the role `id`.
-func (rbac *Rbac[T]) SetParents(id T, parents ...T) error {
+func (rbac *Rbac[T]) SetParents(role IRole[T], parentRoles ...IRole[T]) error {
+	roleID := role.ID()
+
 	rbac.mu.Lock()
 	defer rbac.mu.Unlock()
-	if _, ok := rbac.roles[id]; !ok {
+	if _, ok := rbac.roles[roleID]; !ok {
 		return ErrRoleNotExist
 	}
 
-	for _, parent := range parents {
-		if _, ok := rbac.roles[parent]; !ok {
+	for _, parent := range parentRoles {
+		if _, ok := rbac.roles[parent.ID()]; !ok {
 			return ErrRoleNotExist
 		}
 	}
 
-	if _, ok := rbac.parents[id]; !ok {
-		rbac.parents[id] = make(map[T]struct{})
+	if _, ok := rbac.parents[roleID]; !ok {
+		rbac.parents[roleID] = make(map[T]struct{})
 	}
 
-	for _, parent := range parents {
-		rbac.parents[id][parent] = struct{}{}
+	for _, parent := range parentRoles {
+		rbac.parents[roleID][parent.ID()] = struct{}{}
 	}
 	return nil
 }
@@ -62,8 +64,8 @@ func (rbac *Rbac[T]) SetParents(id T, parents ...T) error {
 // GetParents return `parents` of the role `id`.
 // If the role is not existing, return error
 func (rbac *Rbac[T]) GetParents(id T) ([]T, error) {
-	rbac.mu.Lock()
-	defer rbac.mu.Unlock()
+	rbac.mu.RLock()
+	defer rbac.mu.RUnlock()
 	if _, ok := rbac.roles[id]; !ok {
 		return nil, ErrRoleNotExist
 	}
