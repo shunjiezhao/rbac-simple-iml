@@ -5,7 +5,7 @@ import "errors"
 func CheckExtendCircle[T comparable](rbac *Rbac[T]) error {
 	rbac.mu.RLock()
 	defer rbac.mu.RUnlock()
-	for id := range rbac.roles {
+	for id := range rbac.Roles {
 		if err := checkRole(rbac, id); err != nil {
 			return err
 		}
@@ -30,7 +30,7 @@ func checkRole[T comparable](rbac *Rbac[T], id T) error {
 			}
 		}
 
-		parents := rbac.parents[id]
+		parents := rbac.Parents[id]
 		if len(parents) == 0 {
 			return nil
 		}
@@ -48,7 +48,7 @@ func checkRole[T comparable](rbac *Rbac[T], id T) error {
 }
 
 // AnyGranted checks if any role has the permission.
-func AnyGranted[T comparable](rbac *Rbac[T], roles []T,
+func AnyGranted[T comparable](rbac *Rbac[T], roles []IRole[T],
 	permission IPermission[T]) (ok bool) {
 	rbac.mu.RLock()
 	defer rbac.mu.RUnlock()
@@ -62,7 +62,7 @@ func AnyGranted[T comparable](rbac *Rbac[T], roles []T,
 }
 
 // AllGranted checks if all roles have the permission.
-func AllGranted[T comparable](rbac *Rbac[T], roles []T, permission IPermission[T]) (ok bool) {
+func AllGranted[T comparable](rbac *Rbac[T], roles []IRole[T], permission IPermission[T]) (ok bool) {
 	rbac.mu.RLock()
 	defer rbac.mu.RUnlock()
 	for _, role := range roles {

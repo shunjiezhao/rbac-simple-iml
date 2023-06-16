@@ -16,19 +16,19 @@ type (
 
 	SRole[T comparable] struct {
 		*sync.RWMutex `json:"-"`
-		id            T              `json:"id"` // role 唯一标识
-		permissions   Permissions[T] `json:"permissions"`
+		Id            T              `json:"id"` // role 唯一标识
+		HasPerms      Permissions[T] `json:"permissions"`
 	}
 )
 
 func (role *SRole[T]) ID() T {
-	return role.id
+	return role.Id
 }
-func NewRole[T comparable](id T) *SRole[T] {
+func NewRole[T comparable](id T) IRole[T] {
 	return &SRole[T]{
-		RWMutex:     &sync.RWMutex{},
-		id:          id,
-		permissions: map[T]IPermission[T]{},
+		RWMutex:  &sync.RWMutex{},
+		Id:       id,
+		HasPerms: map[T]IPermission[T]{},
 	}
 }
 
@@ -36,7 +36,7 @@ func NewRole[T comparable](id T) *SRole[T] {
 func (role *SRole[T]) Assign(p IPermission[T]) error {
 	role.Lock()
 	defer role.Unlock()
-	role.permissions[p.ID()] = p
+	role.HasPerms[p.ID()] = p
 	return nil
 }
 
@@ -44,7 +44,7 @@ func (role *SRole[T]) Assign(p IPermission[T]) error {
 func (role *SRole[T]) Permit(p IPermission[T]) bool {
 	role.RLock()
 	defer role.RUnlock()
-	for _, rp := range role.permissions {
+	for _, rp := range role.HasPerms {
 		if rp.Match(p) {
 			return true
 		}
@@ -56,7 +56,7 @@ func (role *SRole[T]) Permit(p IPermission[T]) bool {
 func (role *SRole[T]) Revoke(p IPermission[T]) error {
 	role.Lock()
 	defer role.Unlock()
-	delete(role.permissions, p.ID())
+	delete(role.HasPerms, p.ID())
 	return nil
 }
 
@@ -64,8 +64,8 @@ func (role *SRole[T]) Revoke(p IPermission[T]) error {
 func (role *SRole[T]) Permissions() []IPermission[T] {
 	role.RLock()
 	defer role.RUnlock()
-	result := make([]IPermission[T], 0, len(role.permissions))
-	for _, p := range role.permissions {
+	result := make([]IPermission[T], 0, len(role.HasPerms))
+	for _, p := range role.HasPerms {
 		result = append(result, p)
 	}
 	return result

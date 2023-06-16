@@ -27,7 +27,7 @@ func TestCheckExtendCircleCircle(t *testing.T) {
 		assert.Error(t, CheckExtendCircle(rbac))
 	})
 	t.Run("not have circle", func(t *testing.T) {
-		assert.Nil(t, rbac.RemoveParent(rC.ID(), rA.ID()))
+		assert.Nil(t, rbac.RemoveParent(rC, rA))
 		assert.Nil(t, CheckExtendCircle(rbac))
 	})
 }
@@ -35,7 +35,7 @@ func TestCheckExtendCircleCircle(t *testing.T) {
 func TestAllGranted(t *testing.T) {
 	pestPrepareCircleData(t)
 	// All roles have pAll
-	roles := []string{"role-a", "role-b", "role-c"}
+	roles := []IRole[string]{rA, rB, rC}
 	if !AllGranted(rbac, roles, pAll) {
 		t.Errorf("All roles(%v) were expected having %s, but they weren't.", roles, pAll)
 	}
@@ -48,7 +48,7 @@ func TestAllGranted(t *testing.T) {
 func TestAnyGranted(t *testing.T) {
 	pestPrepareCircleData(t)
 	// All roles have pAll
-	roles := []string{"role-a", "role-b", "role-c"}
+	roles := []IRole[string]{rA, rB, rC}
 	if !AnyGranted(rbac, roles, pA) {
 		t.Errorf("All roles(%v) were expected having %s, but they weren't.", roles, pAll)
 	}

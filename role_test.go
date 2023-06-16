@@ -2,7 +2,7 @@ package rbac
 
 import "testing"
 
-func TestStdrA(t *testing.T) {
+func TestRole(t *testing.T) {
 	rA := NewRole("role-a")
 	if err := rA.Assign(NewPermission("permission-a")); err != nil {
 		t.Fatal(err)
