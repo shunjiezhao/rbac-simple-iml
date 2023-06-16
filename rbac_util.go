@@ -49,11 +49,11 @@ func checkRole[T comparable](rbac *Rbac[T], id T) error {
 
 // AnyGranted checks if any role has the permission.
 func AnyGranted[T comparable](rbac *Rbac[T], roles []T,
-	permission IPermission[T], assert AssertionFunc[T]) (ok bool) {
+	permission IPermission[T]) (ok bool) {
 	rbac.mu.RLock()
 	defer rbac.mu.RUnlock()
 	for _, role := range roles {
-		if rbac.isGranted(role, permission, assert) {
+		if rbac.IsGranted(role, permission) {
 			ok = true
 			break
 		}
@@ -62,12 +62,11 @@ func AnyGranted[T comparable](rbac *Rbac[T], roles []T,
 }
 
 // AllGranted checks if all roles have the permission.
-func AllGranted[T comparable](rbac *Rbac[T], roles []T,
-	permission IPermission[T], assert AssertionFunc[T]) (ok bool) {
+func AllGranted[T comparable](rbac *Rbac[T], roles []T, permission IPermission[T]) (ok bool) {
 	rbac.mu.RLock()
 	defer rbac.mu.RUnlock()
 	for _, role := range roles {
-		if !rbac.isGranted(role, permission, assert) {
+		if !rbac.IsGranted(role, permission) {
 			return false
 		}
 	}

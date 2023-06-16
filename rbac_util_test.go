@@ -36,11 +36,11 @@ func TestAllGranted(t *testing.T) {
 	pestPrepareCircleData(t)
 	// All roles have pAll
 	roles := []string{"role-a", "role-b", "role-c"}
-	if !AllGranted(rbac, roles, pAll, nil) {
+	if !AllGranted(rbac, roles, pAll) {
 		t.Errorf("All roles(%v) were expected having %s, but they weren't.", roles, pAll)
 	}
 
-	if AllGranted(rbac, roles, pA, nil) {
+	if AllGranted(rbac, roles, pA) {
 		t.Errorf("Not all roles(%v) were expected having %s, but they were.", roles, pA)
 	}
 }
@@ -49,11 +49,11 @@ func TestAnyGranted(t *testing.T) {
 	pestPrepareCircleData(t)
 	// All roles have pAll
 	roles := []string{"role-a", "role-b", "role-c"}
-	if !AnyGranted(rbac, roles, pA, nil) {
+	if !AnyGranted(rbac, roles, pA) {
 		t.Errorf("All roles(%v) were expected having %s, but they weren't.", roles, pAll)
 	}
 
-	if AnyGranted(rbac, roles, pNone, nil) {
+	if AnyGranted(rbac, roles, pNone) {
 		t.Errorf("Not all roles(%v) were expected having %s, but they were.", roles, pA)
 	}
 }

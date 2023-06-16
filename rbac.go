@@ -22,8 +22,6 @@ type (
 		roles   Roles[T]             `json:"roles"`
 		parents map[T]map[T]struct{} `json:"parents"` // map[RoleId] ParentRole
 	}
-	// AssertionFunc supplies more fine-grained permission controls.
-	AssertionFunc[T comparable] func(*Rbac[T], T, IPermission[T]) bool
 )
 
 // New returns a RBAC structure.
@@ -149,20 +147,9 @@ func (rbac *Rbac[T]) Get(id T) (r IRole[T], parents []T, err error) {
 }
 
 // IsGranted tests if the role `id` has Permission `p` with the condition `assert`.
-func (rbac *Rbac[T]) IsGranted(id T, p IPermission[T],
-	assert AssertionFunc[T]) (ok bool) {
+func (rbac *Rbac[T]) IsGranted(id T, p IPermission[T]) (ok bool) {
 	rbac.mu.RLock()
-	ok = rbac.isGranted(id, p, assert)
-	rbac.mu.RUnlock()
-	return
-}
-
-// IsGranted is checked role or role parent have permit this permission
-func (rbac *Rbac[T]) isGranted(id T, p IPermission[T],
-	assert AssertionFunc[T]) bool {
-	if assert != nil && !assert(rbac, id, p) {
-		return false
-	}
+	defer rbac.mu.RUnlock()
 	return rbac.recursionCheck(id, p)
 }
 
