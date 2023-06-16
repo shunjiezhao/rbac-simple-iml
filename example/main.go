@@ -1,0 +1,36 @@
+package main
+
+import (
+	"fmt"
+	"rbac"
+)
+
+func main() {
+	rA := rbac.NewRole("role-a")
+	pA := rbac.NewPermission[string]("permission-a")
+	rB := rbac.NewRole("role-b")
+	pB := rbac.NewPermission[string]("permission-b")
+	rC := rbac.NewRole("role-c")
+	pC := rbac.NewPermission[string]("permission-c")
+	assert := func(err error) {
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	rbac := rbac.New[string]()
+	assert(rA.Assign(pA))
+	assert(rB.Assign(pB))
+	assert(rC.Assign(pC))
+	assert(rbac.Add(rA))
+	assert(rbac.Add(rB))
+	assert(rbac.Add(rC))
+
+	assert(rbac.SetParents(rA, rB, rC))
+
+	fmt.Println(rbac.IsGranted(rA, pB))
+	fmt.Println(rbac.IsGranted(rB, pC))
+
+	assert(rbac.Remove(rA))
+	fmt.Println(rbac.RemoveParent(rA, rB))
+}
