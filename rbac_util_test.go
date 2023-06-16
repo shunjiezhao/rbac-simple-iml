@@ -24,11 +24,11 @@ func TestCheckExtendCircleCircle(t *testing.T) {
 		assert.Nil(t, rbac.SetParents(rA, rB))
 		assert.Nil(t, rbac.SetParents(rB, rC))
 		assert.Nil(t, rbac.SetParents(rC, rA))
-		assert.Error(t, CheckExtendCircle(rbac))
+		assert.Error(t, rbac.CheckExtendCircle())
 	})
 	t.Run("not have circle", func(t *testing.T) {
 		assert.Nil(t, rbac.RemoveParent(rC, rA))
-		assert.Nil(t, CheckExtendCircle(rbac))
+		assert.Nil(t, rbac.CheckExtendCircle())
 	})
 }
 

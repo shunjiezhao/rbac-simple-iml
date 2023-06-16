@@ -2,7 +2,7 @@ package rbac
 
 import "errors"
 
-func CheckExtendCircle[T comparable](rbac *Rbac[T]) error {
+func (rbac *Rbac[T]) CheckExtendCircle() error {
 	rbac.mu.RLock()
 	defer rbac.mu.RUnlock()
 	for id := range rbac.Roles {

@@ -18,19 +18,20 @@ func main() {
 		}
 	}
 
-	rbac := rbac.New[string]()
+	Rbac := rbac.New[string]()
 	assert(rA.Assign(pA))
 	assert(rB.Assign(pB))
 	assert(rC.Assign(pC))
-	assert(rbac.Add(rA))
-	assert(rbac.Add(rB))
-	assert(rbac.Add(rC))
+	assert(Rbac.Add(rA))
+	assert(Rbac.Add(rB))
+	assert(Rbac.Add(rC))
 
-	assert(rbac.SetParents(rA, rB, rC))
+	assert(Rbac.SetParents(rA, rB, rC))
 
-	fmt.Println(rbac.IsGranted(rA, pB))
-	fmt.Println(rbac.IsGranted(rB, pC))
+	fmt.Println(Rbac.IsGranted(rA, pB))
+	fmt.Println(Rbac.IsGranted(rB, pC))
 
-	assert(rbac.Remove(rA))
-	fmt.Println(rbac.RemoveParent(rA, rB))
+	assert(Rbac.Remove(rA))
+	fmt.Println(Rbac.RemoveParent(rA, rB))
+	Rbac.CheckExtendCircle()
 }
